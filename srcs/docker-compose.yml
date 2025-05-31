@@ -1,0 +1,29 @@
+Services:
+	wordpress:
+		build: requirements/wordpress
+		env_file: .env
+		networks: 
+		- my-network
+		volumes:
+		- /home/irabhi/data/wordpress:/var/www/wordpress
+	mariadb:
+		build: requirements/mariadb
+		env_file: .env
+		networks:
+		- my-network
+		volumes:
+		- /home/irabhi/data/mariadb:/var/lib/mysql
+	nginx:
+		build: requirements/nginx
+		networks:
+		- my-network
+		volumes:
+		- /home/irabhi/data/wordpress:/var/www/wordpress
+		ports:
+		- "443":"443"
+
+networks:
+	my-network:
+		driver: bridg
+
+
