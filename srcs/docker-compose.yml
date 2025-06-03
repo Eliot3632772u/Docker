@@ -1,29 +1,55 @@
-Services:
-	wordpress:
-		build: requirements/wordpress
-		env_file: .env
-		networks: 
-		- my-network
-		volumes:
-		- /home/irabhi/data/wordpress:/var/www/wordpress
-	mariadb:
-		build: requirements/mariadb
-		env_file: .env
-		networks:
-		- my-network
-		volumes:
-		- /home/irabhi/data/mariadb:/var/lib/mysql
-	nginx:
-		build: requirements/nginx
-		networks:
-		- my-network
-		volumes:
-		- /home/irabhi/data/wordpress:/var/www/wordpress
-		ports:
-		- "443":"443"
+services:
+  wordpress:
+    networks:
+      - inception
+    depends_on:
+      - mariadb
+    build: ./requirements/wordpress
+    env_file: .env
+    volumes:
+     - wordpress:/var/www/html  # Mount WordPress files
+    restart: always
+    expose:
+      - "9000"  # Internal PHP-FPM port
+  mariadb:
+    networks:
+      - inception
+    build: ./requirements/mariadb
+    env_file: .env
+    volumes:
+      - mariadb:/var/lib/mysql
+    restart: always
+    expose:
+      - "3306"  # Internal database communication port
+  nginx:
+    networks:
+      - inception
+    depends_on:
+      - wordpress
+    build: ./requirements/nginx
+    env_file: .env
+    volumes:
+      - wordpress:/var/www/html  # Mount WordPress files
+    restart: always
+    ports:
+      - "8443:443"  # Exposing port 443 for HTTPS traffic
+
+volumes:
+  mariadb:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/irabhi/data/mariadb  # Host path for the MariaDB volume
+      o: bind
+  wordpress:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/irabhi/data/wordpress  # Host path for the WordPress files
+      o: bind
 
 networks:
-	my-network:
-		driver: bridg
+  inception:
+    driver: bridge
 
 

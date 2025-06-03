@@ -1,10 +1,13 @@
-mkdir -p /var/www/wordpress
-cd /var/www/wordpress
+#!/bin/bash
+
+mkdir -p /var/www/html
+cd /var/www/html
 
 curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
 chmod +x wp-cli.phar
 mv wp-cli.phar /usr/local/bin/wp
 
+# wp core download --path=/var/www/wordpress --allow-root
 wp core download --allow-root
 
 wp config create \
@@ -12,8 +15,9 @@ wp config create \
   --dbuser=${MYSQL_USER} \
   --dbpass=${MYSQL_PASSWORD} \
   --dbhost=mariadb \
-  --config-file=/var/www/wordpress/wp-config.php \
   --allow-root
+
+sleep 10
 
 wp core install \
   --url="${DOMAIN_NAME}" \
@@ -29,6 +33,4 @@ wp user create \
    --role=editor \
    --allow-root
 
-mkdir -p /run/php
-
-php-fpm7.4 -F
+php-fpm8.3 -F

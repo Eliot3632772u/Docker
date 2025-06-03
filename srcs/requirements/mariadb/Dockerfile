@@ -8,4 +8,4 @@ COPY tools/mariadb.sh /usr/local/bin/mariadb.sh
 
 RUN chmod +x /usr/local/bin/mariadb.sh
 
-CMD ["mariadb"]
+CMD ["mariadb.sh"]
