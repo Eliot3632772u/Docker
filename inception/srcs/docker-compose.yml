@@ -1,0 +1,105 @@
+services:
+  wordpress:
+    container_name : wordpress
+    build : ./requirements/wordpress/
+    env_file : .env
+    restart : always
+    depends_on : 
+      - mariadb
+      - redis
+    expose :
+      - "9000"
+    volumes :
+      - wordpress_volume:/var/www/html
+    networks :
+      - inception_net
+  mariadb:
+    container_name : mariadb
+    build : ./requirements/mariadb/
+    env_file : .env
+    restart : always
+    expose :
+      - "3306"
+    volumes :
+      - mariadb_volume:/var/lib/mysql
+    networks :
+      - inception_net
+  nginx:
+    container_name : nginx
+    build : ./requirements/nginx
+    env_file : .env
+    restart : always
+    depends_on : 
+      - wordpress
+    ports :
+      - 443:443
+    volumes :
+      - wordpress_volume:/var/www/html
+    networks :
+      - inception_net
+  redis:
+    container_name : redis
+    build : ./requirements/bonus/redis
+    env_file : .env
+    restart : always
+    expose:
+      - "6379"
+    networks :
+      - inception_net
+  ftp:
+    container_name : ftp
+    build : ./requirements/bonus/ftp
+    env_file : .env
+    restart : always
+    ports :
+      - 21:21
+      - 21100-21110:21100-21110
+    networks :
+      - inception_net
+    volumes :
+      - wordpress_volume:/var/www/html
+  adminer:
+    container_name : adminer
+    build : ./requirements/bonus/adminer
+    restart : always
+    ports :
+      - 8080:8080
+    networks :
+      - inception_net
+    depends_on :
+      - mariadb
+  portainer :
+    container_name : portainer
+    build : ./requirements/bonus/portainer
+    restart : always
+    ports :
+      - 9443:9443
+    networks :
+      - inception_net
+    volumes :
+      - portainer_volume:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+
+volumes:
+  portainer_volume:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/nnn/Desktop/inception/srcs/data/potainer_data
+      o: bind
+  wordpress_volume:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/nnn/Desktop/inception/srcs/data/wordpress
+      o: bind
+  mariadb_volume:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/nnn/Desktop/inception/srcs/data/mariadb
+      o: bind
+
+networks:
+  inception_net:
+    driver : bridge
