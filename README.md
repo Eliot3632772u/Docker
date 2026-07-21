@@ -1,9 +1,5 @@
 # The Complete Docker Guide: From Bare Metal to Compose
 
-A from-first-principles, no-topic-skipped guide to Docker — starting from why containers exist at all, down through Linux kernel primitives, the Docker engine's internal architecture, images, networking, storage, Dockerfiles, and Docker Compose.
-
----
-
 ## Table of Contents
 
 1. [Why Containers Exist](#1-why-containers-exist)
